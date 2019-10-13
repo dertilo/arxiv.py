@@ -144,6 +144,8 @@ class Search(object):
 
         n_left = self.max_results
         start = self.start
+        got_zero_results_counter=0
+        num_retries=3
 
         while n_left > 0:
 
@@ -163,9 +165,13 @@ class Search(object):
             logger.info('Received {} entries'.format(n_fetched))
 
             if n_fetched == 0:
-                logger.info('No more entries left to fetch.')
-                logger.info('Fetching finished.')
-                break
+                got_zero_results_counter+=1
+                logger.info('got no entries to fetch.')
+                if got_zero_results_counter>num_retries:
+                    logger.info('Fetching finished.')
+                    break
+            else:
+                got_zero_results_counter=0
 
             # Update the number of results left to download
             n_left = n_left - n_fetched
